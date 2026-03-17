@@ -1,43 +1,18 @@
 from langchain_core.tools import Tool
-import tools
-from calendar_tool import create_meeting
-
-
-# Wrapper for reading emails
-def read_unread_emails(input_text: str = ""):
-    return tools.get_unread_emails()
-
-
-# Wrapper for sending email
-def send_email_tool(input_text: str):
-    try:
-        return tools.send_email(input_text)
-    except Exception as e:
-        return f"Error sending email: {e}"
+from tools.gmail_tools import (
+    get_emails,
+    send_email,
+    reply_to_email,
+    summarize_emails
+)
+from tools.calendar_tools import create_meeting
 
 
 def generate_tools():
-
-    tools_list = [
-
-        Tool(
-            name="GetUnreadEmails",
-            func=read_unread_emails,
-            description="Fetch unread emails from Gmail"
-        ),
-
-        Tool(
-            name="SendEmail",
-            func=send_email_tool,
-            description="Send an email. Example: send email to example@gmail.com subject hello body test message"
-        ),
-
-        Tool(
-            name="CreateMeeting",
-            func=create_meeting,
-            description="Schedule a meeting in Google Calendar"
-        )
-
+    return [
+        Tool("GetEmails", get_emails, "Fetch emails"),
+        Tool("SendEmail", send_email, "Send email"),
+        Tool("ReplyEmail", reply_to_email, "Reply emails"),
+        Tool("SummarizeEmails", summarize_emails, "Summarize emails"),
+        Tool("CreateMeeting", create_meeting, "Schedule meeting")
     ]
-
-    return tools_list

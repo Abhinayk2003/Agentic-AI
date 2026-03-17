@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agent import run_agent
+from tools.calendar_tools import create_meeting
 
 app = FastAPI()
 
@@ -18,5 +19,12 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    response = run_agent(request.message)
+    message = request.message.lower()
+
+    # If user wants to schedule a meeting
+    if "schedule meeting" in message or "create meeting" in message:
+        response = create_meeting(message)
+    else:
+        response = run_agent(request.message)
+
     return {"response": response}
